@@ -19,7 +19,10 @@
       "Bash(pnpm -F client lint:*)",
       "Bash(pnpm -F client test)",
       "Bash(curl:*)",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "WebFetch(domain:www.blockbench.net)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm run lint:*)"
     ],
     "deny": [],
     "ask": []

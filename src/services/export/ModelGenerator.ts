@@ -1,4 +1,9 @@
-import type { BlockbenchElement, BlockbenchFace } from '../../types/blockbench'
+import type {
+  BlockbenchElement,
+  BlockbenchFace,
+  BBModelElement,
+  BBModelFace,
+} from '../../types/blockbench'
 import type { Voxel, VoxelGrid, Vector3 } from '../../types/voxel'
 
 /**
@@ -46,6 +51,68 @@ export class ModelGenerator {
     }
 
     return elements
+  }
+
+  /**
+   * BBModel形式の要素を生成（UUID付き、数値テクスチャインデックス）
+   */
+  generateBBModelElements(
+    voxels: Voxel[],
+    colorMap: Map<string, number>,
+    uvMap: Map<number, [number, number, number, number]>,
+    voxelSize: number,
+    grid?: VoxelGrid
+  ): BBModelElement[] {
+    const elements: BBModelElement[] = []
+
+    for (let i = 0; i < voxels.length; i++) {
+      const voxel = voxels[i]
+      const colorKey = this.colorToKey(voxel.color)
+      const colorIndex = colorMap.get(colorKey) ?? 0
+      const uv = uvMap.get(colorIndex) ?? [0, 0, 16, 16]
+
+      const { from, to } = grid
+        ? this.normalizeCoordinates(voxel.position, voxelSize, grid)
+        : this.calculateBounds(voxel.position, voxelSize)
+
+      const face: BBModelFace = {
+        uv: uv,
+        texture: 0, // 数値インデックス
+      }
+
+      elements.push({
+        uuid: this.generateUUID(),
+        name: `cube_${i}`,
+        box_uv: false,
+        from,
+        to,
+        faces: {
+          down: { ...face },
+          up: { ...face },
+          north: { ...face },
+          south: { ...face },
+          west: { ...face },
+          east: { ...face },
+        },
+      })
+    }
+
+    return elements
+  }
+
+  /**
+   * UUID生成
+   */
+  private generateUUID(): string {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID()
+    }
+    // フォールバック実装
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0
+      const v = c === 'x' ? r : (r & 0x3) | 0x8
+      return v.toString(16)
+    })
   }
 
   /**

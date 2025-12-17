@@ -40,7 +40,7 @@ export function ExportButton({
           disabled={disabled}
           className="export-input"
         />
-        <span className="export-extension">.zip</span>
+        <span className="export-extension">.bbmodel</span>
       </div>
       <button
         onClick={handleExport}

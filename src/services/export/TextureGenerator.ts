@@ -1,9 +1,65 @@
 import type { Color } from '../../types/voxel'
 
+/** Base64テクスチャ生成結果 */
+export interface Base64TextureResult {
+  base64DataUri: string // "data:image/png;base64,..."
+  colorMap: Map<string, number>
+  uvMap: Map<number, [number, number, number, number]>
+  width: number
+  height: number
+}
+
 /**
  * ボクセルの色からテクスチャアトラスを生成
  */
 export class TextureGenerator {
+  /**
+   * ユニークな色からテクスチャアトラスを生成（Base64 data URI形式）
+   * .bbmodel形式用
+   */
+  async generateTextureAsBase64(colors: Color[]): Promise<Base64TextureResult> {
+    // ユニークな色を抽出
+    const colorMap = new Map<string, number>()
+    const uniqueColors: Color[] = []
+
+    for (const color of colors) {
+      const key = this.colorToKey(color)
+      if (!colorMap.has(key)) {
+        colorMap.set(key, uniqueColors.length)
+        uniqueColors.push(color)
+      }
+    }
+
+    // 空の場合
+    if (uniqueColors.length === 0) {
+      const base64DataUri = this.createEmptyTextureBase64()
+      return { base64DataUri, colorMap, uvMap: new Map(), width: 16, height: 16 }
+    }
+
+    // テクスチャサイズを計算
+    const size = Math.ceil(Math.sqrt(uniqueColors.length))
+    const textureSize = Math.max(16, this.nextPowerOfTwo(size))
+
+    // UVマップを生成
+    const uvMap = new Map<number, [number, number, number, number]>()
+    const cellSize = 16 / textureSize
+
+    for (let i = 0; i < uniqueColors.length; i++) {
+      const x = i % size
+      const y = Math.floor(i / size)
+      const u1 = x * cellSize
+      const v1 = y * cellSize
+      const u2 = (x + 1) * cellSize
+      const v2 = (y + 1) * cellSize
+      uvMap.set(i, [u1, v1, u2, v2])
+    }
+
+    // Base64テクスチャを生成
+    const base64DataUri = this.createTextureBase64(uniqueColors, textureSize, size)
+
+    return { base64DataUri, colorMap, uvMap, width: textureSize, height: textureSize }
+  }
+
   /**
    * ユニークな色からテクスチャアトラスを生成
    */
@@ -173,5 +229,69 @@ export class TextureGenerator {
   private createFallbackBlob(): Blob {
     // 最小限のPNGを生成
     return new Blob([new Uint8Array(0)], { type: 'image/png' })
+  }
+
+  /**
+   * テクスチャをBase64 data URIとして生成
+   */
+  private createTextureBase64(colors: Color[], textureSize: number, gridSize: number): string {
+    if (typeof document === 'undefined') {
+      return this.createFallbackBase64()
+    }
+
+    const canvas = document.createElement('canvas')
+    canvas.width = textureSize
+    canvas.height = textureSize
+    const ctx = canvas.getContext('2d')
+
+    if (!ctx) {
+      return this.createFallbackBase64()
+    }
+
+    // 透明で初期化
+    ctx.clearRect(0, 0, textureSize, textureSize)
+
+    // 各色を描画
+    const cellPixelSize = textureSize / gridSize
+
+    for (let i = 0; i < colors.length; i++) {
+      const color = colors[i]
+      const x = (i % gridSize) * cellPixelSize
+      const y = Math.floor(i / gridSize) * cellPixelSize
+
+      ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`
+      ctx.fillRect(x, y, cellPixelSize, cellPixelSize)
+    }
+
+    return canvas.toDataURL('image/png')
+  }
+
+  /**
+   * 空のテクスチャをBase64として生成
+   */
+  private createEmptyTextureBase64(): string {
+    if (typeof document === 'undefined') {
+      return this.createFallbackBase64()
+    }
+
+    const canvas = document.createElement('canvas')
+    canvas.width = 16
+    canvas.height = 16
+    const ctx = canvas.getContext('2d')
+
+    if (ctx) {
+      ctx.fillStyle = 'white'
+      ctx.fillRect(0, 0, 16, 16)
+    }
+
+    return canvas.toDataURL('image/png')
+  }
+
+  /**
+   * フォールバック用のBase64（最小限のPNG）
+   */
+  private createFallbackBase64(): string {
+    // 最小限の1x1白色PNG（Base64エンコード済み）
+    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='
   }
 }

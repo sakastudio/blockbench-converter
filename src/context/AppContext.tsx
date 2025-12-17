@@ -5,7 +5,7 @@ import { appReducer, initialState } from './appReducer'
 import { loadFromFile } from '../utils/gltfLoader'
 import { VoxelizationEngine } from '../services/voxelization'
 import { BlockbenchExporter } from '../services/export'
-import { ZipBuilder, FileDownloader } from '../utils'
+import { FileDownloader } from '../utils'
 
 interface AppContextValue {
   state: AppState
@@ -72,22 +72,13 @@ export function AppProvider({ children }: AppProviderProps) {
 
     try {
       const exporter = new BlockbenchExporter()
-      const result = await exporter.export(state.voxelGrid)
+      const result = await exporter.exportAsBBModel(state.voxelGrid, filename)
 
-      const zipBuilder = new ZipBuilder()
-      const zipBlob = await zipBuilder.build([
-        {
-          name: `${filename}.json`,
-          content: JSON.stringify(result.modelJson, null, 2),
-        },
-        {
-          name: result.textureName,
-          content: result.textureData,
-        },
-      ])
+      // JSON文字列をBlobに変換してダウンロード
+      const blob = new Blob([result.jsonString], { type: 'application/json' })
 
       const downloader = new FileDownloader()
-      downloader.download(zipBlob, `${filename}.zip`)
+      downloader.download(blob, `${filename}.bbmodel`)
     } catch (error) {
       const message = error instanceof Error ? error.message : 'エクスポートに失敗しました'
       dispatch({ type: 'VOXELIZE_ERROR', payload: message })
