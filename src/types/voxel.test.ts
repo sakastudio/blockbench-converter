@@ -51,27 +51,11 @@ describe('Voxel Types', () => {
   })
 
   describe('VoxelizationOptions', () => {
-    it('should have resolution, fillInterior, and colorSamplingMode', () => {
+    it('should have resolution', () => {
       const options: VoxelizationOptions = {
         resolution: 16,
-        fillInterior: false,
-        colorSamplingMode: 'average',
       }
       expect(options.resolution).toBe(16)
-      expect(options.fillInterior).toBe(false)
-      expect(options.colorSamplingMode).toBe('average')
-    })
-
-    it('should allow different color sampling modes', () => {
-      const modes: VoxelizationOptions['colorSamplingMode'][] = ['average', 'dominant', 'nearest']
-      modes.forEach((mode) => {
-        const options: VoxelizationOptions = {
-          resolution: 8,
-          fillInterior: true,
-          colorSamplingMode: mode,
-        }
-        expect(options.colorSamplingMode).toBe(mode)
-      })
     })
   })
 })

@@ -9,8 +9,6 @@ export const initialState: AppState = {
   voxelGrid: null,
   options: {
     resolution: 16,
-    fillInterior: false,
-    colorSamplingMode: 'average',
   },
   error: null,
   progress: 0,

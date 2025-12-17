@@ -27,8 +27,6 @@ describe('E2E: Complete Workflow Tests', () => {
       // Step 2: Voxelize the mesh
       const options: VoxelizationOptions = {
         resolution: 8,
-        fillInterior: false,
-        colorSamplingMode: 'average',
       }
 
       const progressUpdates: number[] = []
@@ -86,8 +84,6 @@ describe('E2E: Complete Workflow Tests', () => {
       for (const resolution of resolutions) {
         const options: VoxelizationOptions = {
           resolution,
-          fillInterior: false,
-          colorSamplingMode: 'average',
         }
 
         const voxelGrid = await engine.voxelize(mesh, options)
@@ -116,8 +112,6 @@ describe('E2E: Complete Workflow Tests', () => {
 
       const options: VoxelizationOptions = {
         resolution: 16,
-        fillInterior: false,
-        colorSamplingMode: 'average',
       }
 
       const voxelGrid = await engine.voxelize(group, options)
@@ -135,8 +129,6 @@ describe('E2E: Complete Workflow Tests', () => {
 
       const options: VoxelizationOptions = {
         resolution: 4,
-        fillInterior: false,
-        colorSamplingMode: 'average',
       }
 
       const voxelGrid = await engine.voxelize(mesh, options)
@@ -195,8 +187,6 @@ describe('E2E: Complete Workflow Tests', () => {
 
         const options: VoxelizationOptions = {
           resolution: 16,
-          fillInterior: false,
-          colorSamplingMode: 'average',
         }
 
         const voxelGrid = await engine.voxelize(emptyGroup, options)
@@ -233,8 +223,6 @@ describe('E2E: Complete Workflow Tests', () => {
 
         const options: VoxelizationOptions = {
           resolution: 16,
-          fillInterior: false,
-          colorSamplingMode: 'average',
         }
 
         const startTime = Date.now()
@@ -258,8 +246,6 @@ describe('E2E: Complete Workflow Tests', () => {
 
         const options: VoxelizationOptions = {
           resolution: 16,
-          fillInterior: false,
-          colorSamplingMode: 'average',
         }
 
         const progressValues: number[] = []

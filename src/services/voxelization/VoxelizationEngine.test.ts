@@ -6,8 +6,6 @@ import type { VoxelizationOptions } from '../../types/voxel'
 describe('VoxelizationEngine', () => {
   const defaultOptions: VoxelizationOptions = {
     resolution: 8,
-    fillInterior: false,
-    colorSamplingMode: 'average',
   }
 
   describe('voxelize', () => {

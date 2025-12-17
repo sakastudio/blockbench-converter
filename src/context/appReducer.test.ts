@@ -10,8 +10,6 @@ describe('appReducer', () => {
       expect(initialState.loadedModel).toBeNull()
       expect(initialState.voxelGrid).toBeNull()
       expect(initialState.options.resolution).toBe(16)
-      expect(initialState.options.fillInterior).toBe(false)
-      expect(initialState.options.colorSamplingMode).toBe('average')
       expect(initialState.error).toBeNull()
       expect(initialState.progress).toBe(0)
     })
@@ -116,20 +114,18 @@ describe('appReducer', () => {
       const newState = appReducer(state, action)
 
       expect(newState.options.resolution).toBe(32)
-      expect(newState.options.fillInterior).toBe(false) // unchanged
     })
 
     it('should handle multiple option updates', () => {
       const state: AppState = { ...initialState }
-      const action: AppAction = {
-        type: 'UPDATE_OPTIONS',
-        payload: { resolution: 64, colorSamplingMode: 'dominant' },
-      }
+      const action1: AppAction = { type: 'UPDATE_OPTIONS', payload: { resolution: 64 } }
+      const action2: AppAction = { type: 'UPDATE_OPTIONS', payload: { resolution: 32 } }
 
-      const newState = appReducer(state, action)
+      const newState1 = appReducer(state, action1)
+      const newState2 = appReducer(newState1, action2)
 
-      expect(newState.options.resolution).toBe(64)
-      expect(newState.options.colorSamplingMode).toBe('dominant')
+      expect(newState1.options.resolution).toBe(64)
+      expect(newState2.options.resolution).toBe(32)
     })
   })
 
@@ -143,7 +139,7 @@ describe('appReducer', () => {
           voxels: [],
           boundingBox: { min: { x: 0, y: 0, z: 0 }, max: { x: 16, y: 16, z: 16 } },
         },
-        options: { resolution: 32, fillInterior: true, colorSamplingMode: 'dominant' },
+        options: { resolution: 32 },
         error: null,
         progress: 100,
       }

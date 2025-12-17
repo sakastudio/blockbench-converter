@@ -141,4 +141,122 @@ export class ColorSampler {
   colorToKey(color: Color): string {
     return `${color.r},${color.g},${color.b}`
   }
+
+  /**
+   * 頂点カラーをサンプリング
+   */
+  sampleVertexColor(
+    mesh: THREE.Mesh,
+    intersection: THREE.Intersection
+  ): Color | null {
+    const geometry = mesh.geometry
+    const colorAttribute = geometry.getAttribute('color')
+
+    if (!colorAttribute || !intersection.face) {
+      return null
+    }
+
+    const face = intersection.face
+    const { a, b, c } = face
+
+    // 重心座標を使用して頂点カラーを補間
+    const barycoord = this.computeBarycentricCoordinates(mesh, intersection)
+    if (!barycoord) {
+      // 重心座標が計算できない場合は最初の頂点の色を使用
+      return {
+        r: Math.round(colorAttribute.getX(a) * 255),
+        g: Math.round(colorAttribute.getY(a) * 255),
+        b: Math.round(colorAttribute.getZ(a) * 255),
+      }
+    }
+
+    // 3頂点の色を取得
+    const colorA = new THREE.Color(
+      colorAttribute.getX(a),
+      colorAttribute.getY(a),
+      colorAttribute.getZ(a)
+    )
+    const colorB = new THREE.Color(
+      colorAttribute.getX(b),
+      colorAttribute.getY(b),
+      colorAttribute.getZ(b)
+    )
+    const colorC = new THREE.Color(
+      colorAttribute.getX(c),
+      colorAttribute.getY(c),
+      colorAttribute.getZ(c)
+    )
+
+    // 重心座標で補間
+    const interpolatedColor = new THREE.Color()
+    interpolatedColor.r = colorA.r * barycoord.x + colorB.r * barycoord.y + colorC.r * barycoord.z
+    interpolatedColor.g = colorA.g * barycoord.x + colorB.g * barycoord.y + colorC.g * barycoord.z
+    interpolatedColor.b = colorA.b * barycoord.x + colorB.b * barycoord.y + colorC.b * barycoord.z
+
+    return this.threeColorToColor(interpolatedColor)
+  }
+
+  /**
+   * 重心座標を計算
+   */
+  private computeBarycentricCoordinates(
+    mesh: THREE.Mesh,
+    intersection: THREE.Intersection
+  ): THREE.Vector3 | null {
+    if (!intersection.face) {
+      return null
+    }
+
+    const geometry = mesh.geometry
+    const position = geometry.getAttribute('position')
+    const face = intersection.face
+
+    // 頂点座標を取得
+    const vA = new THREE.Vector3().fromBufferAttribute(position, face.a)
+    const vB = new THREE.Vector3().fromBufferAttribute(position, face.b)
+    const vC = new THREE.Vector3().fromBufferAttribute(position, face.c)
+
+    // ワールド座標に変換
+    vA.applyMatrix4(mesh.matrixWorld)
+    vB.applyMatrix4(mesh.matrixWorld)
+    vC.applyMatrix4(mesh.matrixWorld)
+
+    // 交差点
+    const point = intersection.point
+
+    // 重心座標を計算
+    const barycoord = new THREE.Vector3()
+    THREE.Triangle.getBarycoord(point, vA, vB, vC, barycoord)
+
+    return barycoord
+  }
+
+  /**
+   * 複数の色の平均を計算
+   */
+  averageColors(colors: Color[]): Color {
+    if (colors.length === 0) {
+      return { r: 255, g: 255, b: 255 }
+    }
+
+    if (colors.length === 1) {
+      return colors[0]
+    }
+
+    let totalR = 0
+    let totalG = 0
+    let totalB = 0
+
+    for (const color of colors) {
+      totalR += color.r
+      totalG += color.g
+      totalB += color.b
+    }
+
+    return {
+      r: Math.round(totalR / colors.length),
+      g: Math.round(totalG / colors.length),
+      b: Math.round(totalB / colors.length),
+    }
+  }
 }

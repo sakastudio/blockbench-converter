@@ -31,6 +31,4 @@ export interface VoxelGrid {
 /** ボクセル化設定 */
 export interface VoxelizationOptions {
   resolution: number // 8-64
-  fillInterior: boolean
-  colorSamplingMode: 'average' | 'dominant' | 'nearest'
 }

@@ -11,8 +11,6 @@ describe('App Types', () => {
         voxelGrid: null,
         options: {
           resolution: 16,
-          fillInterior: false,
-          colorSamplingMode: 'average',
         },
         error: null,
         progress: 0,
@@ -32,7 +30,7 @@ describe('App Types', () => {
           status,
           loadedModel: null,
           voxelGrid: null,
-          options: { resolution: 16, fillInterior: false, colorSamplingMode: 'average' },
+          options: { resolution: 16 },
           error: null,
           progress: 0,
         }

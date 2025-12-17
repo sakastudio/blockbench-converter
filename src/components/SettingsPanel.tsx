@@ -22,23 +22,6 @@ export function SettingsPanel({
     [options, onOptionsChange]
   )
 
-  const handleFillInteriorChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      onOptionsChange({ ...options, fillInterior: e.target.checked })
-    },
-    [options, onOptionsChange]
-  )
-
-  const handleColorModeChange = useCallback(
-    (e: ChangeEvent<HTMLSelectElement>) => {
-      onOptionsChange({
-        ...options,
-        colorSamplingMode: e.target.value as VoxelizationOptions['colorSamplingMode'],
-      })
-    },
-    [options, onOptionsChange]
-  )
-
   return (
     <div className={`settings-panel ${disabled ? 'disabled' : ''}`}>
       <h3 className="settings-title">設定</h3>
@@ -63,31 +46,6 @@ export function SettingsPanel({
         </div>
       </div>
 
-      <div className="settings-group">
-        <label className="settings-label">
-          <input
-            type="checkbox"
-            checked={options.fillInterior}
-            onChange={handleFillInteriorChange}
-            disabled={disabled}
-          />
-          内部を塗りつぶす
-        </label>
-      </div>
-
-      <div className="settings-group">
-        <label className="settings-label">色サンプリング</label>
-        <select
-          value={options.colorSamplingMode}
-          onChange={handleColorModeChange}
-          disabled={disabled}
-          className="settings-select"
-        >
-          <option value="average">平均</option>
-          <option value="dominant">最頻</option>
-          <option value="nearest">最近傍</option>
-        </select>
-      </div>
     </div>
   )
 }
