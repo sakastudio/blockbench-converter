@@ -18,7 +18,8 @@
       "Bash(pnpm -F server test:*)",
       "Bash(pnpm -F client lint:*)",
       "Bash(pnpm -F client test)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(npm run test:*)"
     ],
     "deny": [],
     "ask": []
