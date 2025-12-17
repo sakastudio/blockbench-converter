@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:linktr.ee)",
+      "Bash(pnpm install)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm format:check:*)",
+      "Bash(pnpm format:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(pnpm build:*)",
+      "WebSearch",
+      "Bash(pnpm dev:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill -9)",
+      "mcp__playwright__browser_wait_for",
+      "Bash(pnpm -F server test:*)",
+      "Bash(pnpm -F client lint:*)",
+      "Bash(pnpm -F client test)",
+      "Bash(curl:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "playwright"
+  ]
+}

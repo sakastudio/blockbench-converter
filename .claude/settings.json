@@ -1,0 +1,51 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-react-app:*)",
+      "Bash(npm create:*)",
+      "Bash(npm install)",
+      "Bash(npm run dev:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_close",
+      "Bash(ls:*)",
+      "Bash(npm run build:*)",
+      "Bash(gemini:*)",
+      "Bash(mkdir:*)",
+      "mcp__figma__get_figma_data"
+    ],
+    "deny": []
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "node ./.claude/statusline.js"
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "filepath=$(jq -r '.tool_input.file_path // .tool_input.filePath // empty') && [ -n \"$filepath\" ] && [[ \"$filepath\" =~ \\.(ts|tsx|js|jsx|json|css)$ ]] && pnpm exec prettier --write \"$filepath\" || true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./.claude/hooks/on-stop.sh"
+          },
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Hero.aiff"
+          }
+        ]
+      }
+    ]
+  }
+}
