@@ -36,9 +36,11 @@ export class TextureGenerator {
       return { base64DataUri, colorMap, uvMap: new Map(), width: 16, height: 16 }
     }
 
-    // テクスチャサイズを計算
+    // テクスチャサイズを計算（各セルが十分なピクセル数を持つように）
     const size = Math.ceil(Math.sqrt(uniqueColors.length))
-    const textureSize = Math.max(16, this.nextPowerOfTwo(size))
+    const minCellPixels = 8 // 最小セルサイズ（ピクセル）
+    const minTextureSize = size * minCellPixels
+    const textureSize = Math.max(16, this.nextPowerOfTwo(minTextureSize))
 
     // UVマップを生成（bbmodel形式: ピクセルベースのUV座標）
     const uvMap = new Map<number, [number, number, number, number]>()
