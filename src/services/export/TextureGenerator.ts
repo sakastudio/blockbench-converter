@@ -40,9 +40,9 @@ export class TextureGenerator {
     const size = Math.ceil(Math.sqrt(uniqueColors.length))
     const textureSize = Math.max(16, this.nextPowerOfTwo(size))
 
-    // UVマップを生成
+    // UVマップを生成（bbmodel形式: ピクセルベースのUV座標）
     const uvMap = new Map<number, [number, number, number, number]>()
-    const cellSize = 16 / textureSize
+    const cellSize = textureSize / size // テクスチャサイズ / グリッド数
 
     for (let i = 0; i < uniqueColors.length; i++) {
       const x = i % size
